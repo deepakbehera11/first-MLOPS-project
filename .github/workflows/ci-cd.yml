@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker Image
+      run: |
+        docker build -t deepak171/diabetes-prediction-model:latest .
+        docker tag deepak171/diabetes-prediction-model:latest deepak171/diabetes-prediction-model:${{ github.run_number }}
+
+    - name: Push Docker Image
+      run: |
+        docker push deepak171/diabetes-prediction-model:latest
+        docker push deepak171/diabetes-prediction-model:${{ github.run_number }}
+
+    - name: Set up Kubeconfig
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+
+    - name: Update and Deploy to Kubernetes
+      run: |
+        sed -i "s|replaceImageTag|${{ github.run_number }}|g" k8s-deploy.yml
+        kubectl apply -f k8s-deploy.yml
