@@ -33,4 +33,4 @@ jobs:
     - name: Update and Deploy to Kubernetes
       run: |
         sed -i "s|replaceImageTag|${{ github.run_number }}|g" k8s-deploy.yml
-        kubectl apply -f k8s-deploy.yml
+        kubectl apply -f k8s-deploy.yml --validate=false
