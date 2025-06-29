@@ -29,6 +29,8 @@ jobs:
       run: |
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+        sed -i '/certificate-authority/d' $HOME/.kube/config
+        sed -i '/server:/a\    insecure-skip-tls-verify: true' $HOME/.kube/config
 
     - name: Update and Deploy to Kubernetes
       run: |
