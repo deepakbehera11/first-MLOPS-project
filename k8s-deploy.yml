@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: diabetes-api
-        image: deepak171/diabetes-prediction-model:v1
+        image: deepak171/diabetes-prediction-model:replaceImageTag
         ports:
         - containerPort: 8000
         imagePullPolicy: Always
@@ -32,5 +32,6 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8000
-      nodeport: 30036
+      nodePort: 30036
+
   type: NodePort
